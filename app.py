@@ -4,15 +4,17 @@ from collections import defaultdict
 import pandas as pd
 import plotly.express as px
 
-
-# Function to load CSS from a file
-def load_css(file_path):
-    with open(file_path, "r") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# Load the CSS file
-load_css("styles.css")
-
+# Custom CSS to increase the content area width
+st.markdown(
+    """
+    <style>
+    .stMainBlockContainer .block-container {
+        max-width: 90%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Inicializar o banco de dados SQLite
 def init_db():
@@ -34,14 +36,12 @@ event_schedule = {
     "Terça-feira 29/04/2025": ["8:00", "9:00", "10:00", "11:00"],
 }
 
-
 # Título do aplicativo
 st.title("Agendador de Eventos")
 
-st.markdown("### Marcação Defesa de Doutorado Daniel de Sousa Moraes")
+st.markdown("### Marcação Defesa de Tese de Doutorado - Daniel de Sousa Moraes")
 
 # Campo de entrada para o nome do usuário
-
 user_name = st.text_input("DIGITE SEU NOME:", key="user_name")
 
 # Verificar se o usuário já enviou preferências
@@ -51,15 +51,9 @@ if user_name:
         "SELECT date, time FROM preferences WHERE user_name = ?", (user_name,)
     ).fetchall()
 
-# # Exibir as preferências atuais do usuário
-# if user_name and user_preferences:
-#     st.write(f"**Preferências atuais de {user_name}:**")
-#     for date, time in user_preferences:
-#         st.write(f"- {date} às {time}")
-
 # Formulário de entrada do usuário
 with st.form("preference_form"):
-    st.write("#### Escolha a data e o horário preferidos para o evento:")
+    st.write("#### Escolhas as datas e os horários de sua preferência para o evento:")
     
     # Exibir as datas horizontalmente e os horários verticalmente abaixo de cada data
     cols = st.columns(len(event_schedule))  # Criar colunas para cada data
@@ -76,7 +70,7 @@ with st.form("preference_form"):
                     selected_times[date].append(time)
     
     # Botão de envio
-    submitted = st.form_submit_button("Enviar/Atualizar Preferência")
+    submitted = st.form_submit_button("Enviar Preferência")
     
     if submitted:
         if user_name:
@@ -95,15 +89,25 @@ with st.form("preference_form"):
             st.error("Por favor, insira seu nome.")
 
 # Exibir as preferências atuais
-#st.write("### Preferências Atuais")
 all_preferences = conn.execute("SELECT user_name, date, time FROM preferences").fetchall()
 df = pd.DataFrame(all_preferences, columns=["Usuário", "Data", "Horário"])
 
 # Combinar Data e Horário em uma única coluna para melhor visualização
 df["Data_Horário"] = df["Data"] + " " + df["Horário"]
 
+# Extrair a parte da data (dd/mm/yyyy) e converter para datetime
+df["Data_Parte"] = df["Data"].str.split(" ").str[1]  # Extrair a parte da data
+df["Data_Parte"] = pd.to_datetime(df["Data_Parte"], format="%d/%m/%Y")  # Converter para datetime
+
+# Ordenar as datas e horários
+df = df.sort_values(by=["Data_Parte", "Horário"])  # Ordenar por data e horário
+
+# Criar uma coluna categórica para Data_Horário com a ordem correta
+df["Data_Horário"] = df["Data"] + " " + df["Horário"]
+df["Data_Horário"] = pd.Categorical(df["Data_Horário"], categories=df["Data_Horário"].unique(), ordered=True)
+
 # Criar uma tabela dinâmica para contar os votos por usuário para cada data e horário
-pivot_table = df.pivot_table(index="Data_Horário", columns="Usuário", aggfunc="size", fill_value=0)
+pivot_table = df.pivot_table(index="Data_Horário", columns="Usuário", aggfunc="size", fill_value=0, observed=True)
 
 # Plotar os votos usando Plotly
 if not pivot_table.empty:
@@ -129,19 +133,3 @@ if not pivot_table.empty:
     
     # Exibir o gráfico no Streamlit
     st.plotly_chart(fig, use_container_width=True)
-
-# Determinar a data e o horário final do evento
-# if st.button("Calcular Data e Horário Final do Evento"):
-#     max_votes = -1
-#     best_date, best_time = None, None
-    
-#     for date, time, votes in all_preferences:
-#         if votes > max_votes:
-#             max_votes = votes
-#             best_date = date
-#             best_time = time
-    
-#     if best_date and best_time:
-#         st.success(f"### Data e Horário Final do Evento: **{best_date} às {best_time}**")
-#     else:
-#         st.warning("Nenhuma preferência foi enviada ainda.")
