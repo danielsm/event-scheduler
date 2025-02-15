@@ -1,0 +1,24 @@
+
+
+/* Ensure text is readable on the white background */
+.stTextInput label, .stButton button, .stMarkdown, .stHeader, .stTitle {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* Customize the text input label */
+.stTextInput label {
+    font-size: 30px !important;
+    font-weight: bold !important;
+}
+
+/* Customize buttons */
+.stButton button {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    font-size: 18px !important;
+}
+
+/* Customize headers */
+.stHeader {
+    font-size: 24px !important;
+}
