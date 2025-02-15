@@ -30,17 +30,17 @@ conn = init_db()
 
 # Definir as datas e horários do evento
 event_schedule = {
-    "Quinta-feira 24/04/2025": ["8:00", "9:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-    "Sexta-feira 25/04/2025": ["8:00", "9:00", "10:00", "11:00"],
-    "Segunda-feira 28/04/2025": ["8:00", "9:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-    "Terça-feira 29/04/2025": ["8:00", "9:00", "10:00", "11:00"],
+    "Quinta-feira 24/04/2025": ["8:00-11:00", "9:00-12:00", "10:00-13:00", "11:00-14:00", "14:00-17:00", "15:00-18:00", "16:00-19:00"],
+    "Sexta-feira 25/04/2025": ["8:00-11:00", "9:00-12:00", "10:00-13:00", "11:00-14:00"],
+    "Segunda-feira 28/04/2025": ["8:00-11:00", "9:00-12:00", "10:00-13:00", "11:00-14:00", "14:00-17:00", "15:00-18:00", "16:00-19:00"],
+    "Terça-feira 29/04/2025": ["8:00-11:00", "9:00-12:00", "10:00-13:00", "11:00-14:00"],
 }
 
 # Título do aplicativo
 st.title("Agendador de Eventos")
 
 st.markdown("### Marcação Defesa de Tese de Doutorado - Daniel de Sousa Moraes")
-
+st.markdown("#### Duração prevista: 3h")
 # Campo de entrada para o nome do usuário
 user_name = st.text_input("DIGITE SEU NOME:", key="user_name")
 
