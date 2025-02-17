@@ -129,6 +129,8 @@ if not pivot_table.empty:
         legend_title="Usuários",
         barmode="stack",  # Barras empilhadas
         hovermode="y unified",  # Exibir informações ao passar o mouse
+        height=800,  # Aumentar a altura do gráfico
+        margin=dict(l=150),
     )
     
     # Exibir o gráfico no Streamlit
